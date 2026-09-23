@@ -1,4 +1,4 @@
-# sw-metadata-bot
+# rsmetacheck-bot
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19468976.svg)](https://doi.org/10.5281/zenodo.19468976)
 [![SWH](https://archive.softwareheritage.org/badge/swh:1:dir:9f3d474c040158cc675e8db135767e0d2d3fba7b/)](https://archive.softwareheritage.org/swh:1:dir:9f3d474c040158cc675e8db135767e0d2d3fba7b;origin=https://github.com/SoftwareUnderstanding/sw-metadata-bot;visit=swh:1:snp:03da984544982fdf5aa1f556012b917250f1e4c3;anchor=swh:1:rev:fc64150edf2e35f045cf3858d81b00ca6e7f6e68)
@@ -9,7 +9,7 @@
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
 ![coverage](coverage.svg)
 ![interrogate](interrogate_badge.svg)
-[![RsMetaCheck Validation](https://github.com/SoftwareUnderstanding/sw-metadata-bot/actions/workflows/rsmetacheck.yml/badge.svg)](https://github.com/SoftwareUnderstanding/sw-metadata-bot/actions/workflows/rsmetacheck.yml)
+[![rsmetacheck Validation](https://github.com/SoftwareUnderstanding/sw-metadata-bot/actions/workflows/rsmetacheck.yml/badge.svg)](https://github.com/SoftwareUnderstanding/sw-metadata-bot/actions/workflows/rsmetacheck.yml)
 
 An automated bot that analyzes repository metadata quality and creates issues with improvement suggestions.
 
@@ -59,7 +59,7 @@ Simply comment **"unsubscribe"** on the issue and we'll remove your repository f
 
 ## 🔍 What Analysis Is Used
 
-This bot uses [RSMetaCheck](https://github.com/SoftwareUnderstanding/RsMetaCheck), which analyzes:
+This bot uses [rsmetacheck](https://github.com/SoftwareUnderstanding/rsmetacheck), which analyzes:
 
 - Software metadata completeness
 - Citation and documentation quality
@@ -76,7 +76,7 @@ The bot **does not**:
 ## 📚 Learn More
 
 - [CodeMetaSoft Project](https://w3id.org/codemetasoft) - About the initiative
-- [RSMetaCheck](https://github.com/SoftwareUnderstanding/RsMetaCheck) - The analysis tool
+- [rsmetacheck](https://github.com/SoftwareUnderstanding/rsmetacheck) - The analysis tool
 - [Citation File Format](https://citation-file-format.github.io/) - How to add CITATION.cff
 
 ---
