@@ -9,6 +9,29 @@ from typing import Any, Mapping
 from . import constants
 
 
+def extract_bot_version(data: Mapping[str, Any]) -> str | None:
+    """Return the first bot-version value found in `data` using the canonical
+    and legacy field names defined in `constants.VERSION_FIELDS_ALL`.
+
+    Returns None if no matching value is present.
+    """
+    if data is None:
+        return None
+    # Prefer the canonical bot version field, then known legacy names.
+    priority = (
+        constants.VERSION_FIELD_BOT,
+        getattr(constants, "VERSION_FIELD_SW_METADATA_LEGACY", None),
+        constants.VERSION_FIELD_BOT_LEGACY,
+    )
+    for key in priority:
+        if not key:
+            continue
+        val = data.get(key)
+        if isinstance(val, str) and val:
+            return val
+    return None
+
+
 @dataclass(frozen=True)
 class RecordAnalysis:
     """Core analysis fields persisted for each repository record."""
@@ -54,7 +77,7 @@ class ReportRecord:
     warnings_count: int | None = None
     issue_url: str | None = None
     analysis_date: str | None = None
-    sw_metadata_bot_version: str | None = None
+    rsmetacheck_bot_version: str | None = None
     rsmetacheck_version: str | None = None
     pitfalls_ids: tuple[str, ...] = ()
     warnings_ids: tuple[str, ...] = ()
@@ -83,7 +106,7 @@ class ReportRecord:
             "warnings_count": self.warnings_count,
             "issue_url": self.issue_url,
             "analysis_date": self.analysis_date,
-            "sw_metadata_bot_version": self.sw_metadata_bot_version,
+            constants.VERSION_FIELD_BOT: self.rsmetacheck_bot_version,
             "rsmetacheck_version": self.rsmetacheck_version,
             "pitfalls_ids": list(self.pitfalls_ids),
             "warnings_ids": list(self.warnings_ids),
@@ -106,11 +129,17 @@ class ReportRecord:
 
     def get_tool_metadata(self) -> "ToolMetadata":
         """Retrieve tool versions information"""
-        sw_metadata_bot_version = (
-            self.sw_metadata_bot_version if not None else "unknown"
+        rsmetacheck_bot_version = (
+            self.rsmetacheck_bot_version
+            if self.rsmetacheck_bot_version is not None
+            else "unknown"
         )
-        rsmetacheck_version = self.rsmetacheck_version if not None else "unknown"
-        return ToolMetadata(sw_metadata_bot_version, rsmetacheck_version)
+        rsmetacheck_version = (
+            self.rsmetacheck_version
+            if self.rsmetacheck_version is not None
+            else "unknown"
+        )
+        return ToolMetadata(rsmetacheck_bot_version, rsmetacheck_version)
 
     @classmethod
     def from_dict(cls, data: Mapping[str, Any]) -> "ReportRecord":
@@ -122,10 +151,10 @@ class ReportRecord:
             warnings_count=data.get("warnings_count"),
             issue_url=data.get("issue_url"),
             analysis_date=data.get("analysis_date"),
-            sw_metadata_bot_version=data.get("sw_metadata_bot_version"),
             rsmetacheck_version=data.get("rsmetacheck_version"),
             pitfalls_ids=tuple(data.get("pitfalls_ids") or ()),
             warnings_ids=tuple(data.get("warnings_ids") or ()),
+            rsmetacheck_bot_version=extract_bot_version(data),
             action=data.get("action"),
             reason_code=data.get("reason_code"),
             previous_issue_url=data.get("previous_issue_url"),
@@ -146,16 +175,16 @@ class ReportRecord:
 
 @dataclass(frozen=True)
 class ToolMetadata:
-    """Intermediate class to represent the sw-metadata-bot metadata"""
+    """Intermediate class to represent the rsmetacheck-bot metadata"""
 
-    sw_metadata_bot_version: str = "unknown"
-    rs_metacheck_version: str = "unknown"
+    rsmetacheck_bot_version: str = "unknown"
+    rsmetacheck_version: str = "unknown"
 
     def to_dict(self):
         """Convert to dict"""
         return {
-            "sw_metadata_bot_version": self.sw_metadata_bot_version,
-            "rsmetacheck_version": self.rs_metacheck_version,
+            constants.VERSION_FIELD_BOT: self.rsmetacheck_bot_version,
+            "rsmetacheck_version": self.rsmetacheck_version,
         }
 
 
@@ -271,7 +300,7 @@ def build_record_entry(
         "warnings_count": analysis.warnings_count,
         "issue_url": lifecycle_data.issue_url,
         "analysis_date": analysis.analysis_date,
-        "sw_metadata_bot_version": analysis.bot_version,
+        constants.VERSION_FIELD_BOT: analysis.bot_version,
         "rsmetacheck_version": analysis.rsmetacheck_version,
         "pitfalls_ids": analysis.pitfalls_ids or [],
         "warnings_ids": analysis.warnings_ids or [],
